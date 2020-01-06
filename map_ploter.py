@@ -1,5 +1,7 @@
 from gmplot import gmplot
 import json
+import plotly.graph_objects as go
+import plotly.io as pio
 import requests
 from operator import itemgetter
 
@@ -152,26 +154,56 @@ results_sorted = sorted(results, key=itemgetter(1))
 
 write_to_csv(results_sorted)
 
+lon_cntr = (opts["LongitudeMin"] + opts["LongitudeMax"])/2
+lat_cntr = (opts["LatitudeMin"]  + opts["LatitudeMax"] ) /2
 zoom = 11
 # Place map
-gmap = gmplot.GoogleMapPlotter(opts["LatitudeMin"], opts["LongitudeMin"], zoom)
 
 # https://github.com/vgm64/gmplot
 
 show_cnt =30 # how many to show after sorting
 list_lats =[]
 list_lons =[]
+list_labels =[]
 for row in results_sorted[0:show_cnt]:
     list_lats.append(row[8])
     list_lons.append(row[9])
+    list_labels.append(row[1])
 
-
-gmap.scatter(list_lats, list_lons, '#3B0B39', size=40, marker=False)
-
-## Marker
-#hidden_gem_lat, hidden_gem_lon = 49.264028, -123.510347
-#gmap.marker(hidden_gem_lat, hidden_gem_lon, 'cornflowerblue')
-
-# Draw
-gmap.draw("my_map.html")
+#gmap = gmplot.GoogleMapPlotter(lat_cntr, lon_cntr, zoom)
+#gmap.scatter(list_lats, list_lons, '#3B0B39', size=40, marker=False)
+#gmap.marker(hidden_gem_lat, hidden_gem_lon, 'cornflowerblue') #hidden_gem_lat, hidden_gem_lon = 49.264028, -123.510347
+#gmap.draw("my_map.html")
     
+
+mapbox_access_token = open(".mapbox_token").read()
+
+fig = go.Figure(go.Scattermapbox(
+        lat=list_lats,
+        lon=list_lons,
+        mode='markers',
+        marker=go.scattermapbox.Marker(
+            size=9
+        ),
+        text=list_labels,
+    ))
+
+
+fig.update_layout(
+    autosize=True,
+    hovermode='closest',
+    mapbox=go.layout.Mapbox(
+        accesstoken=mapbox_access_token,
+        bearing=0,
+        center=go.layout.mapbox.Center(
+            lat=lat_cntr, 
+            lon=lon_cntr
+        ),
+        pitch=0,
+        zoom=zoom
+    ),
+)
+
+pio.renderers.default = 'browser'
+#pio.show(fig)
+pio.write_html(fig, file='map.html', auto_open=True)

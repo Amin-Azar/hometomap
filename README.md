@@ -10,7 +10,7 @@ Check the result [here](https://amin-azar.github.io/hometomap/)
 3. Plots them on google map
 
 
-<iframe width="100%" height="300" frameborder="0" scrolling="no" src="my_map.html" border="0"></iframe>
+<iframe width="100%" height="300" frameborder="0" scrolling="no" src="map.html" border="0"></iframe>
 
 ## Contributing
 
