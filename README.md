@@ -5,9 +5,10 @@ Check the result [here](https://amin-azar.github.io/hometomap/)
 
 ### Steps
 
-1. Searches for properties with the specified price range
-2. Sorts based on Parce Per SquareFoot
-3. Plots them on mapbox map
+1. Gets locations from user
+2. Searches for properties with the specified price range
+3. Sorts based on Parce Per SquareFoot
+4. Plots them on mapbox map
 
 
 <iframe width="100%" height="300" frameborder="0" scrolling="no" src="map.html" border="0"></iframe>

@@ -107,9 +107,11 @@ def retrieve_input():
     root.destroy()
     search_pat = inputValue
 
-textBox=Text(root, height=2, width=10)
+label = Label(root, text="Enter Location to search:")
+label.pack()
+textBox=Text(root, height=2, width=40)
 textBox.pack()
-buttonCommit=Button(root, height=1, width=10, text="Commit", 
+buttonCommit=Button(root, height=1, width=10, text="Search", 
                     command=lambda: retrieve_input())
 #command=lambda: retrieve_input() >>> just means do this when i press the button
 buttonCommit.pack()
