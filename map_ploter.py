@@ -158,7 +158,7 @@ gmap = gmplot.GoogleMapPlotter(opts["LatitudeMin"], opts["LongitudeMin"], zoom)
 
 # https://github.com/vgm64/gmplot
 
-show_cnt =10 # how many to show after sorting
+show_cnt =30 # how many to show after sorting
 list_lats =[]
 list_lons =[]
 for row in results_sorted[0:show_cnt]:
