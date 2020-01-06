@@ -3,6 +3,8 @@ import json
 import plotly.graph_objects as go
 import plotly.io as pio
 import requests
+import sys
+from tkinter import *
 from operator import itemgetter
 
 
@@ -11,6 +13,8 @@ def write_to_csv(list_of_list):
     for row in list_of_list:
         f.write(",".join(str(r) for r in row))
         f.write("\n")
+
+mapbox_access_token = open(".mapbox_token").read()
 
 # node.js source @ https://github.com/Froren/realtorca
 #CultureId
@@ -47,7 +51,6 @@ def write_to_csv(list_of_list):
     # 12-D: Open Houses First	
     # 13-D: More Photos First	
     # 11-D: Virtual Tour First	
-
 #CurrentPage - read somewhere that it maxes at 51
 #RecordsPerPage - maxes at 200
 #MaximumResults
@@ -83,7 +86,6 @@ def write_to_csv(list_of_list):
     #27 Manufactured Home/Mobile
     #28 Commercial Apartment
     #29 Manufactured Home
-
 #Keywords - search text
 #OpenHouse - 0 or 1, must include if filtering by open house
 #OpenHouseStartDate - MM/DD/YYYY
@@ -95,23 +97,60 @@ mandatory_opts = {
     "PropertySearchTypeId": 1
     }
 
+#---GET SEARCH KEYWORDS------------------------------------------------------------
+search_pat= "kelowna" # "Coal Harbour Liquer"
+
+root=Tk()
+def retrieve_input():
+    global search_pat
+    inputValue=textBox.get("1.0","end-1c")
+    root.destroy()
+    search_pat = inputValue
+
+textBox=Text(root, height=2, width=10)
+textBox.pack()
+buttonCommit=Button(root, height=1, width=10, text="Commit", 
+                    command=lambda: retrieve_input())
+#command=lambda: retrieve_input() >>> just means do this when i press the button
+buttonCommit.pack()
+
+root.mainloop()
+
+
+#---GET REPO AND THEN USER LOCATOIN-----------------------------------------------------
+if search_pat=="":
+    print("Nothing to search!")
+    sys.exit()
+
+serch_key = search_pat.replace(" ", "%20")
+search_api ="https://api.mapbox.com/geocoding/v5/mapbox.places/"+serch_key+".json?&access_token="+str(mapbox_access_token)
+response = requests.get(search_api)
+print(response)
+data = json.loads(response.text)
+features = data["features"]
+# TODO: select between searches, not only the first one
+list_Search = features[0]
+lon, lat = list_Search["center"]
+
+#print(lon,lat)
 # https://www.openstreetmap.org/export#map=11/49.2562/-123.0146
+r = 0.1 # 0.2 diameter
 opts = {
-  "LongitudeMin": -123.2663,
-  "LongitudeMax": -122.8965,
-  "LatitudeMin": 49.2037,
-  "LatitudeMax": 49.3614,
+  "LongitudeMin": lon - r,
+  "LongitudeMax": lon + r,
+  "LatitudeMin": lat - r,
+  "LatitudeMax": lat + r,
   "PriceMin": 1000000,
-  "PriceMax": 2000000,
+  "PriceMax": 10000000,
   "RecordsPerPage": 200,
   #"CurrentPage": 2
   "BuildingTypeId": 17 # apartment
-  
 }
 
 opts.update(mandatory_opts)
 realtor_api = "https://www.realtor.ca/Residential/Map.aspx#LongitudeMin=-79.6758985519409&LongitudeMax=-79.6079635620117&LatitudeMin=43.57601549736786&LatitudeMax=43.602250137362276&PriceMin=100000&PriceMax=425000"
 API_URL = 'https://api2.realtor.ca/Listing.svc/PropertySearch_Post'
+
 response = requests.post(url=API_URL, data=opts)
 print(response)
 data = json.loads(response.text)
@@ -174,9 +213,7 @@ for row in results_sorted[0:show_cnt]:
 #gmap.scatter(list_lats, list_lons, '#3B0B39', size=40, marker=False)
 #gmap.marker(hidden_gem_lat, hidden_gem_lon, 'cornflowerblue') #hidden_gem_lat, hidden_gem_lon = 49.264028, -123.510347
 #gmap.draw("my_map.html")
-    
 
-mapbox_access_token = open(".mapbox_token").read()
 
 fig = go.Figure(go.Scattermapbox(
         lat=list_lats,
