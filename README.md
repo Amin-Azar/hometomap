@@ -1,4 +1,4 @@
-# Where Low-Proced homes are Located ?!
+# Where Low-Priced homes are Located ?!
   
 Search realtor.ca for homes with a given price range and location and plot the locations on a map.
 Check the result [here](https://amin-azar.github.io/hometomap/)
